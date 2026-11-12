@@ -142,7 +142,7 @@ function meta(){if(!('mediaSession' in navigator)||cur<0)return;navigator.mediaS
   [['play',resume],['pause',pause],['nexttrack',next],['previoustrack',prev]].forEach(([a,f])=>{try{navigator.mediaSession.setActionHandler(a,f)}catch(e){}})}
 
 /* ---------- Spotify (API oficial, login PKCE) ---------- */
-const SP_ID='PEGA_TU_CLIENT_ID',SP_RED=location.origin+location.pathname,SP_SC='user-read-playback-state user-modify-playback-state user-read-currently-playing';
+const SP_ID='7157b4c8f99b4fcda5b88acd5b2b044c',SP_RED=location.origin+location.pathname,SP_SC='user-read-playback-state user-modify-playback-state user-read-currently-playing';
 const b64=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 async function spLogin(){const v=b64(crypto.getRandomValues(new Uint8Array(48)));localStorage.setItem('sp_v',v);const ch=b64(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v)));location.href='https://accounts.spotify.com/authorize?'+new URLSearchParams({client_id:SP_ID,response_type:'code',redirect_uri:SP_RED,scope:SP_SC,code_challenge_method:'S256',code_challenge:ch})}
 async function spToken(body){try{const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:SP_ID,...body})});const j=await r.json();if(j.access_token){sp={token:j.access_token,exp:Date.now()+j.expires_in*1000-60000,ref:j.refresh_token||(sp&&sp.ref)};localStorage.setItem('sp_ref',sp.ref);return true}}catch(e){}return false}
